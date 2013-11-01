@@ -147,7 +147,7 @@ do
                                 x=$(echo $(( $nofile_count * 100 / $nofile_limit )))
                                 if [ $? -ne 0 ]; then
                                     echo "$(date) nofile_limit->$nofile_limit for user->$user " >> /var/log/limitslog
-                                elif [ $? -ne 0 ]; then
+                                elif [ $? -ge 0 ]; then
                                     ratio=$(( $nofile_count * 100 / $nofile_limit ))
 
                                     if [ "$DEBUG_ON" -eq "1" ]; then
