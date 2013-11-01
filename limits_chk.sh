@@ -92,17 +92,22 @@ do
                     # Find out the current usage in %
                     if [ "$limit" != "" ]; then
 
-                        ratio=$(( $count * 100 / $limit ))
+                        x=$(echo $(( $count * 100 / $limit )))
+                        if [ $? -ne 0 ]; then
+                            echo "$(date) Limit->$limit for user->$user " >> /var/log/limitslog
+                        elif [ $? -ge 0 ]; then            
+                            ratio=$(( $count * 100 / $limit ))
 
-                        if [ "$DEBUG_ON" -eq "1" ]; then
-                            echo "$(date) The nproc current usage in %->$ratio for user->$user " >> /var/log/limitslog
-                        fi
+                            if [ "$DEBUG_ON" -eq "1" ]; then
+                                echo "$(date) The nproc current usage in %->$ratio for user->$user " >> /var/log/limitslog
+                            fi
 
-                        # Check if current usage exceeds MINIMUM or MAXIMUM quota. Write the info to /var/log/limitlog.
-                        if [ $ratio -ge $MAX_QUOTA ]; then
-                            echo "$(date) ERROR nproc usage exceeded the maximum quota - user:$user, count:$count, limit:$limit" >> /var/log/limitslog
-                        elif [ $ratio -ge $MIN_QUOTA ]; then
-                            echo "$(date) WARN nproc usage exceeded the minimum quota - user:$user, count:$count, limit:$limit"  >> /var/log/limitslog
+                            # Check if current usage exceeds MINIMUM or MAXIMUM quota. Write the info to /var/log/limitlog.
+                            if [ $ratio -ge $MAX_QUOTA ]; then
+                                echo "$(date) ERROR nproc usage exceeded the maximum quota - user:$user, count:$count, limit:$limit" >> /var/log/limitslog
+                            elif [ $ratio -ge $MIN_QUOTA ]; then
+                                echo "$(date) WARN nproc usage exceeded the minimum quota - user:$user, count:$count, limit:$limit"  >> /var/log/limitslog
+                            fi
                         fi
                     fi
 
@@ -139,17 +144,22 @@ do
                     # Find out the current usage in %
                     if [ "$nofile_limit" != "" ]; then
 
-                                ratio=$(( $nofile_count * 100 / $nofile_limit ))
+                                x=$(echo $(( $nofile_count * 100 / $nofile_limit )))
+                                if [ $? -ne 0 ]; then
+                                    echo "$(date) nofile_limit->$nofile_limit for user->$user " >> /var/log/limitslog
+                                elif [ $? -ne 0 ]; then
+                                    ratio=$(( $nofile_count * 100 / $nofile_limit ))
 
-                                if [ "$DEBUG_ON" -eq "1" ]; then
-                                    echo "$(date) The nofile current usage in %->$ratio for user->$user " >> /var/log/limitslog
-                                fi
+                                    if [ "$DEBUG_ON" -eq "1" ]; then
+                                        echo "$(date) The nofile current usage in %->$ratio for user->$user " >> /var/log/limitslog
+                                    fi
 
-                                # Check if current usage exceeds MINIMUM or MAXIMUM quota. Write the info to /var/log/limitlog.
-                                if [ $ratio -ge $MAX_QUOTA ]; then
+                                    # Check if current usage exceeds MINIMUM or MAXIMUM quota. Write the info to /var/log/limitlog.
+                                    if [ $ratio -ge $MAX_QUOTA ]; then
                                         echo "$(date) ERROR nofile usage exceeded the maximum quota - user:$user, nofile_count:$nofile_count, nofile_limit:$nofile_limit" >> /var/log/limitslog
-                                elif [ $ratio -ge $MIN_QUOTA ]; then
+                                    elif [ $ratio -ge $MIN_QUOTA ]; then
                                         echo "$(date) WARN nofile usage exceeded the minimum quota - user:$user, nofile_count:$nofile_count, nofile_limit:$nofile_limit"  >> /var/log/limitslog
+                                    fi
                                 fi
                         fi
                 fi
