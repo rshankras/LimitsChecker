@@ -8,15 +8,15 @@
 ## ---------------------------------------------------------------------------------------------------------
 ## limits_chk_notifer.sh ##
 
-EMAIL_ADDRESS="ravishankar@outlook.in"
+EMAIL_ADDRESS=ravishankar@outlook.in
 LOG_FILE="/var/log/limitslog"
-PATTERN1="WARN"
-PATTERN2="ERROR"
+PATTERN1=WARN
+PATTERN2=ERROR
 
 
 tail -Fn0 $LOG_FILE | \
 while read line ; do
-        echo "$line" | awk $PATTERN1 || $PATTERN2
+        echo "$line" | grep -e $PATTERN1 -e $PATTERN2
         if [ $? = 0 ]
         then
              echo $line | mailx -s"limits log report" $EMAIL_ADDRESS
