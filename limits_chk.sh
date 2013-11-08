@@ -39,7 +39,7 @@ MAX_QUOTA=90 # in % used for error.
 NPROC_MIN_VAL=1
 NOFILE_MIN_VAL=1
 
-TIME_INTERVAL=30 # Time interval for sleep.
+TIME_INTERVAL=10 # Time interval for sleep.
 
 DEBUG_ON=0
 
