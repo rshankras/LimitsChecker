@@ -6,9 +6,6 @@
 ## Usage: /limits_chk.sh -d (use -d switch for debugging)
 ## Author: RShankar
 ##
-## History
-## 05-Nov-2013 - Included check for cpu usage
-##
 ## Sample /var/log/limitslog output
 ##
 ## Fri Nov  1 07:42:32 EDT 2013 Started:limits_chq
@@ -41,7 +38,6 @@ MAX_QUOTA=90 # in % used for error.
 
 NPROC_MIN_VAL=1
 NOFILE_MIN_VAL=1
-CPU_USAGE_MIN_VAL=1 # in %
 
 TIME_INTERVAL=30 # Time interval for sleep.
 
@@ -130,57 +126,6 @@ do
 
                 # do the check only if nofile count is greater than minimum count
                 if [ $nofile_count -ge $NOFILE_MIN_VAL ]; then
-
-                     # Retrieve the pid from first row for the user
-                    pid=$(ps h -U $user|awk '{print $1}'|head -1)
-
-                    if [ "$DEBUG_ON" -eq "1" ]; then
-                        echo "$(date) Retrieved first pid $pid for user->$user " >> /var/log/limitslog
-                    fi
-
-                    # get the nofile limits from proc
-                    nofile_limit=$(cat /proc/$pid/limits 2>/dev/null| grep 'open files' | awk '{print $5}')
-
-                    if [ "$DEBUG_ON" -eq "1" ]; then
-                        echo "$(date) Retrieved the nofile limit->$nofile_limit for user->$user " >> /var/log/limitslog
-                    fi
-
-                    # Find out the current usage in %
-                    if [ "$nofile_limit" != "" ]; then
-
-                                x=$(echo $(( $nofile_count * 100 / $nofile_limit )))
-                                if [ $? -ne 0 ]; then
-                                    echo "$(date) nofile_limit->$nofile_limit for user->$user " >> /var/log/limitslog
-                                elif [ $? -ge 0 ]; then
-                                    ratio=$(( $nofile_count * 100 / $nofile_limit ))
-
-                                    if [ "$DEBUG_ON" -eq "1" ]; then
-                                        echo "$(date) The nofile current usage in %->$ratio for user->$user " >> /var/log/limitslog
-                                    fi
-
-                                    # Check if current usage exceeds MINIMUM or MAXIMUM quota. Write the info to /var/log/limitlog.
-                                    if [ $ratio -ge $MAX_QUOTA ]; then
-                                        echo "$(date) ERROR nofile usage exceeded the maximum quota - user:$user, nofile_count:$nofile_count, nofile_limit:$nofile_limit" >> /var/log/limitslog
-                                    elif [ $ratio -ge $MIN_QUOTA ]; then
-                                        echo "$(date) WARN nofile usage exceeded the minimum quota - user:$user, nofile_count:$nofile_count, nofile_limit:$nofile_limit"  >> /var/log/limitslog
-                                    fi
-                                fi
-                        fi
-                fi
-
-                ## Check whether CPU usage has exceeded the limit.
-                if [ "$DEBUG_ON" -eq "1" ]; then
-                    echo "$(date) Checking the cpu uage" >> /var/log/limitslog
-                fi
-
-                cpu_usage=$(ps -u root -L -o pcpu --no-heading| paste -sd+ | bc)
-
-                if [ "$DEBUG_ON" -eq "1" ]; then
-                    echo "$(date) cpu usage for user->$user is $cpu_usage " >> /var/log/limitslog
-                fi
-
-                # do the check only if cpu uage is greater than minimum usage
-                if [ $CPU_USAGE_MIN_VAL -ge $NOFILE_MIN_VAL ]; then
 
                      # Retrieve the pid from first row for the user
                     pid=$(ps h -U $user|awk '{print $1}'|head -1)
